@@ -1,8 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card"; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Check, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const CodeDiff = () => {
   return (
@@ -34,6 +36,30 @@ const CodeDiff = () => {
 };
 
 const PortfolioPreview = () => {
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+  const portfolioUrl = "https://prshowcase.dev/portfolio/john-doe";
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(portfolioUrl)
+      .then(() => {
+        setCopied(true);
+        toast({
+          title: "URL copied",
+          description: "Portfolio URL has been copied to clipboard",
+        });
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((err) => {
+        toast({
+          title: "Failed to copy",
+          description: "Could not copy the URL to clipboard",
+          variant: "destructive",
+        });
+        console.error("Could not copy text: ", err);
+      });
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-6">Portfolio Preview</h2>
@@ -112,11 +138,18 @@ const PortfolioPreview = () => {
               <div className="flex items-center border rounded-md overflow-hidden">
                 <input 
                   type="text" 
-                  value="https://prshowcase.dev/portfolio/john-doe" 
+                  value={portfolioUrl} 
                   className="flex-1 p-2 bg-background border-none focus:outline-none" 
                   readOnly
                 />
-                <Button variant="ghost">Copy</Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleCopyUrl}
+                  className="flex items-center gap-2"
+                >
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
               </div>
             </div>
           </div>
