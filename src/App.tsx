@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import CookieConsent from "@/components/CookieConsent";
+import { Analytics } from "@/components/Analytics";
 import Index from "./pages/Index";
 import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
@@ -30,6 +32,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <Analytics />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/portfolio" element={<Portfolio />} />
@@ -37,6 +40,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <CookieConsent />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
