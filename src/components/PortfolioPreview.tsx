@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface PortfolioPreviewProps {
+  selectedCount?: number;
+}
+
 const CodeDiff = () => {
   return (
-    <div className="code-block bg-github-dark rounded-md p-4 text-white text-sm font-mono overflow-x-auto">
+    <div className="code-block bg-[hsl(var(--github-dark))] rounded-md p-4 text-white text-sm font-mono overflow-x-auto">
       <div className="flex">
         <div className="text-gray-400 pr-4 select-none border-r border-gray-700">
           <div>1</div>
@@ -35,7 +39,7 @@ const CodeDiff = () => {
   );
 };
 
-const PortfolioPreview = () => {
+const PortfolioPreview = ({ selectedCount = 0 }: PortfolioPreviewProps) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const portfolioUrl = "https://prshowcase.dev/portfolio/john-doe";
@@ -64,97 +68,112 @@ const PortfolioPreview = () => {
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-6">Portfolio Preview</h2>
       
-      <Tabs defaultValue="content">
-        <TabsList className="mb-4">
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="design">Design</TabsTrigger>
-          <TabsTrigger value="publish">Publish</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="content">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-medium mb-4">Feature: Implement Discount Calculation</h3>
-              
-              <div className="mb-6">
-                <h4 className="text-sm font-semibold mb-2">Project Description</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  E-commerce platform with focus on scalable architecture and responsive design.
-                </p>
+      {selectedCount === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-2">Select pull requests to preview your portfolio</p>
+          <p className="text-sm text-muted-foreground">Choose your best contributions to showcase</p>
+        </div>
+      )}
+      
+      {selectedCount > 0 && (
+        <Tabs defaultValue="content">
+          <TabsList className="mb-4">
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="design">Design</TabsTrigger>
+            <TabsTrigger value="publish">Publish</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="content">
+            <Card>
+              <CardContent className="p-6">
+                <div className="mb-4 p-4 bg-secondary/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    {selectedCount} pull request{selectedCount === 1 ? '' : 's'} selected for your portfolio
+                  </p>
+                </div>
                 
-                <h4 className="text-sm font-semibold mb-2">My Contribution</h4>
-                <p className="text-sm text-muted-foreground">
-                  Implemented a discount calculation feature that properly handles percentage discounts 
-                  on individual items. Fixed a critical bug in the total calculation that was causing
-                  incorrect order totals when discounts were applied.
-                </p>
-              </div>
-              
-              <div className="mb-6">
-                <h4 className="text-sm font-semibold mb-2">Code Changes</h4>
-                <CodeDiff />
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Impact</h4>
-                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                  <li>Fixed a critical calculation bug affecting order totals</li>
-                  <li>Improved code maintainability with better comments</li>
-                  <li>Enhanced test coverage for edge cases</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="design">
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Choose a theme for your portfolio</p>
-            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-6">
-              <div className="border-2 border-primary p-4 rounded-md cursor-pointer">
-                <div className="h-20 bg-github-dark rounded mb-2"></div>
-                <p className="text-sm font-medium">GitHub Dark</p>
-              </div>
-              <div className="border border-border p-4 rounded-md cursor-pointer">
-                <div className="h-20 bg-white rounded mb-2"></div>
-                <p className="text-sm font-medium">Light</p>
-              </div>
-              <div className="border border-border p-4 rounded-md cursor-pointer">
-                <div className="h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded mb-2"></div>
-                <p className="text-sm font-medium">Gradient</p>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="publish">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium mb-2">Ready to Publish</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Your portfolio is ready to be published. Share it with the world!
-            </p>
-            
-            <div className="mt-6 max-w-md mx-auto">
-              <div className="flex items-center border rounded-md overflow-hidden">
-                <input 
-                  type="text" 
-                  value={portfolioUrl} 
-                  className="flex-1 p-2 bg-background border-none focus:outline-none" 
-                  readOnly
-                />
-                <Button 
-                  variant="ghost" 
-                  onClick={handleCopyUrl}
-                  className="flex items-center gap-2"
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  {copied ? "Copied" : "Copy"}
-                </Button>
+                <h3 className="text-lg font-medium mb-4">Feature: Implement Discount Calculation</h3>
+                
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-2">Project Description</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    E-commerce platform with focus on scalable architecture and responsive design.
+                  </p>
+                  
+                  <h4 className="text-sm font-semibold mb-2">My Contribution</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Implemented a discount calculation feature that properly handles percentage discounts 
+                    on individual items. Fixed a critical bug in the total calculation that was causing
+                    incorrect order totals when discounts were applied.
+                  </p>
+                </div>
+                
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-2">Code Changes</h4>
+                  <CodeDiff />
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Impact</h4>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                    <li>Fixed a critical calculation bug affecting order totals</li>
+                    <li>Improved code maintainability with better comments</li>
+                    <li>Enhanced test coverage for edge cases</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="design">
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Choose a theme for your portfolio</p>
+              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-6">
+                <div className="border-2 border-primary p-4 rounded-md cursor-pointer">
+                  <div className="h-20 bg-[#0d1117] rounded mb-2"></div>
+                  <p className="text-sm font-medium">GitHub Dark</p>
+                </div>
+                <div className="border border-border p-4 rounded-md cursor-pointer">
+                  <div className="h-20 bg-white rounded mb-2"></div>
+                  <p className="text-sm font-medium">Light</p>
+                </div>
+                <div className="border border-border p-4 rounded-md cursor-pointer">
+                  <div className="h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded mb-2"></div>
+                  <p className="text-sm font-medium">Gradient</p>
+                </div>
               </div>
             </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+          
+          <TabsContent value="publish">
+            <div className="text-center py-12">
+              <h3 className="text-lg font-medium mb-2">Ready to Publish</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Your portfolio is ready to be published. Share it with the world!
+              </p>
+              
+              <div className="mt-6 max-w-md mx-auto">
+                <div className="flex items-center border rounded-md overflow-hidden">
+                  <input 
+                    type="text" 
+                    value={portfolioUrl} 
+                    className="flex-1 p-2 bg-background border-none focus:outline-none" 
+                    readOnly
+                  />
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleCopyUrl}
+                    className="flex items-center gap-2"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };

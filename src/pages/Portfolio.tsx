@@ -3,8 +3,10 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Github, Share2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft, Github, Share2, ExternalLink } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import SEOHead from '@/components/SEOHead';
+import { useToast } from '@/hooks/use-toast';
 
 const CodeDiff = () => {
   return (
@@ -36,96 +38,188 @@ const CodeDiff = () => {
 };
 
 const Portfolio = () => {
+  const { id } = useParams();
+  const { toast } = useToast();
+
+  const handleShare = async () => {
+    const portfolioUrl = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "John Doe's Technical Portfolio",
+          text: "Check out my technical contributions and pull requests",
+          url: portfolioUrl,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(portfolioUrl);
+        toast({
+          title: "Link copied",
+          description: "Portfolio URL has been copied to clipboard",
+        });
+      } catch (err) {
+        toast({
+          title: "Failed to copy",
+          description: "Could not copy the URL to clipboard",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <header className="border-b border-border sticky top-0 z-10 bg-background/95 backdrop-blur">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 mr-8">
-              <span className="text-primary font-bold">PR</span>
-              <span className="font-bold">Showcase</span>
-            </Link>
-            <h1 className="text-lg font-medium hidden md:block">
-              John Doe's Technical Portfolio
-            </h1>
+    <>
+      <SEOHead 
+        title="John Doe - Technical Portfolio | PRShowcase"
+        description="Explore John Doe's technical contributions including bug fixes, feature implementations, and performance optimizations across multiple open-source projects."
+        keywords="John Doe portfolio, software developer, open source contributions, GitHub pull requests"
+        url={`https://prshowcase.dev/portfolio/${id || 'john-doe'}`}
+      />
+      <div className="min-h-screen flex flex-col bg-background">
+        <header className="border-b border-border sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center gap-2 mr-8 hover:opacity-80 transition-opacity">
+                <span className="text-primary font-bold">PR</span>
+                <span className="font-bold">Showcase</span>
+              </Link>
+              <h1 className="text-lg font-medium hidden md:block">
+                John Doe's Technical Portfolio
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2"
+                asChild
+              >
+                <a 
+                  href="https://github.com/johndoe" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="View John Doe's GitHub profile"
+                >
+                  <Github size={16} />
+                  <span className="hidden sm:inline">View on GitHub</span>
+                </a>
+              </Button>
+              <Button 
+                size="sm" 
+                className="flex items-center gap-2"
+                onClick={handleShare}
+              >
+                <Share2 size={16} />
+                <span className="hidden sm:inline">Share</span>
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Github size={16} />
-              <span>View on GitHub</span>
+        </header>
+        <main className="flex-1 container py-8">
+          <nav className="flex items-center gap-2 mb-8" aria-label="Breadcrumb">
+            <Button variant="ghost" size="sm" asChild className="flex items-center gap-2">
+              <Link to="/">
+                <ArrowLeft size={16} />
+                <span>Back to Dashboard</span>
+              </Link>
             </Button>
-            <Button size="sm" className="flex items-center gap-2">
-              <Share2 size={16} />
-              <span>Share</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-      
-      <main className="flex-1 container py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <Button variant="ghost" size="sm" asChild className="flex items-center gap-2">
-            <Link to="/">
-              <ArrowLeft size={16} />
-              <span>Back to Dashboard</span>
-            </Link>
-          </Button>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="md:w-1/3">
-            <Card className="sticky top-24">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <img 
-                    src="https://i.pravatar.cc/100" 
-                    alt="John Doe" 
-                    className="rounded-full w-16 h-16" 
-                  />
-                  <div>
-                    <h2 className="font-bold text-xl">John Doe</h2>
-                    <p className="text-sm text-muted-foreground">Full Stack Developer</p>
-                  </div>
-                </div>
-                
-                <div className="mb-6">
-                  <h3 className="text-sm font-semibold mb-2">About</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Passionate developer focused on creating maintainable, scalable web applications
-                    with a strong emphasis on user experience and performance.
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="text-sm font-semibold mb-2">Technical Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'MongoDB'].map(skill => (
-                      <span key={skill} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          </nav>
           
-          <div className="md:w-2/3">
-            <h2 className="text-2xl font-bold mb-6">Technical Contributions</h2>
-            
-            <div className="space-y-8">
-              {/* First PR */}
-              <div className="border rounded-lg p-6 bg-card">
-                <div className="flex justify-between flex-wrap gap-4 mb-4">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <aside className="lg:w-1/3">
+              <Card className="sticky top-24">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    <img 
+                      src="https://i.pravatar.cc/100" 
+                      alt="John Doe profile picture" 
+                      className="rounded-full w-16 h-16" 
+                      loading="lazy"
+                    />
+                    <div>
+                      <h2 className="font-bold text-xl">John Doe</h2>
+                      <p className="text-sm text-muted-foreground">Full Stack Developer</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold mb-2">About</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Passionate developer focused on creating maintainable, scalable web applications
+                      with a strong emphasis on user experience and performance.
+                    </p>
+                  </div>
+                  
                   <div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                    <h3 className="text-sm font-semibold mb-3">Technical Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {['React', 'TypeScript', 'Node.js', 'GraphQL', 'AWS', 'MongoDB'].map(skill => (
+                        <span 
+                          key={skill} 
+                          className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </aside>
+            
+            <section className="lg:w-2/3">
+              <h2 className="text-2xl font-bold mb-6">Technical Contributions</h2>
+              
+              <div className="space-y-8">
+                {/* First PR */}
+                <article className="border rounded-lg p-6 bg-card">
+                  <header className="mb-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                       <span>e-commerce/shopping-cart</span>
                       <span>•</span>
                       <span>Merged 4 days ago</span>
+                      <Button variant="ghost" size="sm" className="ml-auto p-1 h-auto" asChild>
+                        <a 
+                          href="https://github.com/e-commerce/shopping-cart/pull/123" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          aria-label="View pull request on GitHub"
+                        >
+                          <ExternalLink size={14} />
+                        </a>
+                      </Button>
                     </div>
                     <h3 className="text-xl font-bold">Fix discount calculation in shopping cart</h3>
-                  </div>
-                </div>
+                  </header>
+                  
+                  <p className="text-muted-foreground mb-4">
+                    Fixed a critical bug in the discount calculation logic that was causing incorrect order totals when promotions were applied.
+                  </p>
+                </article>
+              </div>
+            </section>
+          </div>
+        </main>
+        
+        <footer className="border-t py-6 mt-12">
+          <div className="container flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              Created with <a href="/" className="text-primary hover:underline">PRShowcase</a>
+            </p>
+            <p className="text-sm text-muted-foreground mt-2 sm:mt-0">
+              Last updated {new Date().toLocaleDateString()}
+            </p>
+          </div>
+        </footer>
+      </div>
+    </>
+  );
+};
                 
                 <Tabs defaultValue="overview" className="mb-4">
                   <TabsList>
